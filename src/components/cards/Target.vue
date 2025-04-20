@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+import {defineComponent, PropType} from "vue";
 import Analytics from "../../utils/analytics";
 import EffectBlock from "../formblocks/EffectBlock.vue";
 import CellcountBlock from "../formblocks/CellcountBlock.vue";
@@ -14,9 +14,10 @@ import Space from "../global/Space.vue";
 import Card from "../global/Card.vue";
 import Grid from "../global/Grid.vue";
 import GridItem from "../global/GridItem.vue";
+import CollapsibleSection from "../global/CollapsibleSection.vue";
 import DevTool from "./DevTool.vue";
 
-import { Animation, Effect, WebGLEffect } from "../../types";
+import {Animation, Effect, WebGLEffect} from "../../types";
 import animations from "../../constants/animations";
 import effects from "../../constants/effects";
 import bgeffects from "../../constants/bgeffects";
@@ -24,7 +25,7 @@ import staticeffects from "../../constants/staticeffects";
 import webgleffects from "../../constants/webgleffects";
 import easings from "../../constants/easings";
 
-import { renderAllCells } from "../../utils/emoji";
+import {renderAllCells} from "../../utils/emoji";
 import {
   EMOJI_SIZE,
   ANIMATED_EMOJI_SIZE,
@@ -33,7 +34,7 @@ import {
   FRAMECOUNT_MAX,
 } from "../../constants/emoji";
 
-import { NODE_ENV } from "../../utils/env";
+import {NODE_ENV} from "../../utils/env";
 
 type AnimationOption = { label: string, value: Animation };
 type EffectOption = { label: string, value: Effect };
@@ -41,17 +42,17 @@ type WebGLEffectOption = { label: string, value: WebGLEffect };
 type SpeedOption = { label: string, value: number };
 
 const TRIMMING_OPTIONS = [
-  { label: "ぴっちり", value: "" },
-  { label: "はみだす (アス比維持)", value: "cover" },
-  { label: "おさめる (アス比維持)", value: "contain" },
-  { label: "そのまま (長方形)", value: "stretch" },
+  {label: "ぴっちり", value: ""},
+  // { label: "はみだす (アス比維持)", value: "cover" },
+  {label: "おさめる (アス比維持)", value: "contain"},
+  {label: "そのまま (長方形)", value: "stretch"},
 ];
 
 const SPEED_OPTIONS = [
-  { label: "コマ送り", value: 2.0 },
-  { label: "ゆっくり", value: 1.3 },
-  { label: "ふつう", value: 0.8 },
-  { label: "はやい", value: 0.3 },
+  {label: "コマ送り", value: 2.0},
+  {label: "ゆっくり", value: 1.3},
+  {label: "ふつう", value: 0.8},
+  {label: "はやい", value: 0.3},
 ];
 
 export default defineComponent({
@@ -69,12 +70,13 @@ export default defineComponent({
     Space,
     Select,
     Slider,
+    CollapsibleSection,
     DevTool,
   },
   props: {
-    baseImage: { type: Object as PropType<HTMLImageElement | HTMLCanvasElement>, default: null },
-    show: { type: Boolean, required: true },
-    emojiSize: { type: Number, default: null },
+    baseImage: {type: Object as PropType<HTMLImageElement | HTMLCanvasElement>, default: null},
+    show: {type: Boolean, required: true},
+    emojiSize: {type: Number, default: null},
   },
   emits: [
     "render",
@@ -187,9 +189,9 @@ export default defineComponent({
         const offsetV = Math.floor((height - heightPerCell * vCells) / 2);
         this.conf.trimH = [offsetH, width - offsetH];
         this.conf.trimV = offsetV < 0 ? (
-          [offsetV, height - offsetV]
+            [offsetV, height - offsetV]
         ) : (
-          [0, height - offsetV * 2]
+            [0, height - offsetV * 2]
         );
         this.conf.targetAspect = aspect;
       }
@@ -214,9 +216,9 @@ export default defineComponent({
       this.dirty = false;
       if (this.baseImage) {
         const animated = !!(
-          this.conf.animation
-          || this.conf.effects.length
-          || this.conf.webglEffects.length
+            this.conf.animation
+            || this.conf.effects.length
+            || this.conf.webglEffects.length
         );
 
         const framerate = Math.min(FRAMERATE_MAX, Math.ceil(FRAMECOUNT_MAX / this.conf.duration));
@@ -227,26 +229,26 @@ export default defineComponent({
         const binarySizeLimit = this.emojiSize ? Infinity : BINARY_SIZE_LIMIT;
         renderAllCells(
           this.baseImage,
-          this.conf.trimH[0],
-          this.conf.trimV[0],
-          this.conf.cells[0],
-          this.conf.cells[1],
-          this.conf.trimH[1] - this.conf.trimH[0],
-          this.conf.trimV[1] - this.conf.trimV[0],
-          Math.max(maxSize * aspectCoef, 1),
-          Math.max(maxSize / aspectCoef, 1),
-          this.conf.noCrop,
-          animated,
-          this.conf.animation ? this.conf.animation.value : null,
-          this.conf.animationInvert,
-          this.conf.effects.concat(this.conf.staticEffects).map((eff) => eff.value),
-          this.conf.webglEffects.map((eff) => eff.value),
-          this.conf.easing.value,
-          framerate,
-          framecount,
-          this.conf.backgroundColor,
-          this.conf.transparent,
-          binarySizeLimit,
+            this.conf.trimH[0],
+            this.conf.trimV[0],
+            this.conf.cells[0],
+            this.conf.cells[1],
+            this.conf.trimH[1] - this.conf.trimH[0],
+            this.conf.trimV[1] - this.conf.trimV[0],
+            Math.max(maxSize * aspectCoef, 1),
+            Math.max(maxSize / aspectCoef, 1),
+            this.conf.noCrop,
+            animated,
+            this.conf.animation ? this.conf.animation.value : null,
+            this.conf.animationInvert,
+            this.conf.effects.concat(this.conf.staticEffects).map((eff) => eff.value),
+            this.conf.webglEffects.map((eff) => eff.value),
+            this.conf.easing.value,
+            framerate,
+            framecount,
+            this.conf.backgroundColor,
+            this.conf.transparent,
+            binarySizeLimit,
         ).then((res) => {
           this.$emit("render", res);
           this.running = false;
@@ -259,136 +261,61 @@ export default defineComponent({
 </script>
 
 <template>
-  <Card v-if="show">
-    <Grid v-if="!devMode" :columns="[[450, 1], [Infinity, 2]]" spaced>
-      <GridItem>
-        <Space vertical xlarge full>
-          <Fieldset label="アニメーション">
-            <Space vertical full>
-              <Select
-                  v-model="conf.animation"
-                  name="アニメーション"
-                  nullable :options="animations" />
-              <Checkbox v-model="conf.animationInvert" name="逆再生">
-                {{ "逆再生" }}
-              </Checkbox>
-            </Space>
-          </Fieldset>
-          <EffectBlock v-model="conf.webglEffects" :effects="webgleffects" />
-          <EffectBlock v-model="conf.effects" :effects="effects" />
-          <EffectBlock v-if="showDetails" v-model="conf.effects" :effects="bgeffects" />
-<!--          <Fieldset v-if="showDetails" label="画像サイズ">-->
-<!--            <Space vertical full>-->
-<!--              <Checkbox-->
-<!--                  :model-value="emojiSize === null"-->
-<!--                  name="画像サイズ自動"-->
-<!--                  @update:model-value="toggleAutoSize">-->
-<!--                自動-->
-<!--              </Checkbox>-->
-<!--              <Number-->
-<!--                  v-if="emojiSize !== null"-->
-<!--                  :model-value="emojiSize"-->
-<!--                  :min="1"-->
-<!--                  @update:model-value="changeEmojiSize" />-->
-<!--            </Space>-->
-<!--          </Fieldset>-->
-<!--          <Fieldset v-if="showDetails && isDev" label="開発者向け">-->
-<!--            <Button danger type="text" name="開発者モード" @click="devMode = true">-->
-<!--              <template #icon>-->
-<!--                🔨-->
-<!--              </template>-->
-<!--              開発者モード-->
-<!--            </Button>-->
-<!--          </Fieldset>-->
-        </Space>
-      </GridItem>
-      <GridItem>
-        <Space vertical xlarge full>
-          <Fieldset v-if="showDetails" label="切り抜き">
-            <Select
-                v-model="conf.trimming"
-                name="切り抜き"
-                :options="TRIMMING_OPTIONS"
-                @update:model-value="refreshDefaultSettings" />
-          </Fieldset>
-<!--          <CellcountBlock-->
-<!--              v-if="showDetails"-->
-<!--              v-model="conf.cells"-->
-<!--              @update:model-value="refreshDefaultSettings" />-->
-<!--          <Fieldset v-if="showDetails" label="トリミング (横)">-->
-<!--            <Slider-->
-<!--                v-model="conf.trimH"-->
-<!--                block-->
-<!--                nonzero-->
-<!--                :marks="[0, baseImage.width]"-->
-<!--                :min="baseImage ? - Math.floor(baseImage.width * 0.5) : 0"-->
-<!--                :max="baseImage ? Math.ceil(baseImage.width * 1.5) : 0" />-->
-<!--          </Fieldset>-->
-<!--          <Fieldset v-if="showDetails" label="トリミング (縦)">-->
-<!--            <Slider-->
-<!--                v-model="conf.trimV"-->
-<!--                block-->
-<!--                nonzero-->
-<!--                :marks="[0, baseImage.height]"-->
-<!--                :min="baseImage ? - Math.floor(baseImage.height * 0.5) : 0"-->
-<!--                :max="baseImage ? Math.ceil(baseImage.height * 1.5) : 0" />-->
-<!--          </Fieldset>-->
-          <Fieldset v-if="showDetails" label="アス比">
-            <Slider
-                v-model="conf.targetAspect"
-                block
-                nonzero
-                :step="0.01"
-                :marks="[1, naturalAspect]"
-                :min="Math.min(0.2, naturalAspect)"
-                :max="Math.max(5, naturalAspect)" />
-          </Fieldset>
-          <EffectBlock v-model="conf.staticEffects" :effects="staticeffects" />
-          <Fieldset v-if="showDetails" label="速度 (アニメ)">
-            <Select
-                v-model="conf.speed"
-                name="速度(アニメ)"
-                :options="SPEED_OPTIONS"
-                @update:model-value="selectSpeed($event)" />
-          </Fieldset>
-          <Fieldset v-if="showDetails" label="長さ (アニメ)">
-            <Slider
-                v-model="conf.duration"
-                block
-                :min="0.1"
-                :step="0.1"
-                :max="2.0" />
-          </Fieldset>
-          <Fieldset v-if="showDetails" label="イージング (アニメ)">
-            <Select v-model="conf.easing" name="イージング" :options="easings" />
-          </Fieldset>
-          <Fieldset label="背景色">
-            <Space vertical full>
-              <Color
-                  v-model="conf.backgroundColor"
-                  name="背景色"
-                  block
-                  @update:model-value="conf.transparent = false" />
-              <Checkbox v-model="conf.transparent" name="背景色(透過)">
-                {{ "透過" }}
-              </Checkbox>
-            </Space>
-          </Fieldset>
-        </Space>
-      </GridItem>
-    </Grid>
-<!--    <template v-if="!devMode" #footer>-->
-<!--      <Checkbox v-model="showDetails" name="職人モード(効果)">-->
-<!--        {{ "職人モード" }}-->
-<!--      </Checkbox>-->
-<!--    </template>-->
-    <DevTool
-        v-if="devMode"
-        v-model:no-crop="conf.noCrop"
-        :show="show && devMode"
-        @close="devMode = false"
-        @build-animation="conf.animation = $event"
-        @build-effect="conf.effects = [$event]"
-        @build-shader="conf.webglEffects = [$event]" />
-  </Card>
+  <div style="display: flex; flex-direction: column; gap: 1em">
+    <Fieldset label="背景色">
+      <Space vertical full>
+        <Color
+            v-model="conf.backgroundColor"
+            name="背景色"
+            block
+            @update:model-value="conf.transparent = false"/>
+        <Checkbox v-model="conf.transparent" name="背景色(透過)">
+          {{ "透過" }}
+        </Checkbox>
+      </Space>
+    </Fieldset>
+    <Fieldset v-if="showDetails" label="絵文字の横幅">
+      <Select
+          v-model="conf.trimming"
+          name="切り抜き"
+          :options="TRIMMING_OPTIONS"
+          @update:model-value="refreshDefaultSettings"/>
+    </Fieldset>
+    <CollapsibleSection label="アニメーション" :default-open="false">
+      <Space vertical full>
+        <Select
+            v-model="conf.animation"
+            name="アニメーション"
+            nullable :options="animations"/>
+        <Checkbox v-model="conf.animationInvert" name="逆再生">
+          {{ "逆再生" }}
+        </Checkbox>
+
+        <Fieldset v-if="showDetails" label="速度 (アニメ)">
+          <Select
+              v-model="conf.speed"
+              name="速度(アニメ)"
+              :options="SPEED_OPTIONS"
+              @update:model-value="selectSpeed($event)"/>
+        </Fieldset>
+        <Fieldset v-if="showDetails" label="長さ (アニメ)">
+          <Slider
+              v-model="conf.duration"
+              block
+              :min="0.1"
+              :step="0.1"
+              :max="2.0"/>
+        </Fieldset>
+        <Fieldset v-if="showDetails" label="イージング (アニメ)">
+          <Select v-model="conf.easing" name="イージング" :options="easings"/>
+        </Fieldset>
+      </Space>
+    </CollapsibleSection>
+    <CollapsibleSection label="特殊効果とか" :default-open="false">
+      <EffectBlock v-model="conf.webglEffects" :effects="webgleffects"/>
+      <EffectBlock v-model="conf.effects" :effects="effects"/>
+      <EffectBlock v-if="showDetails" v-model="conf.effects" :effects="bgeffects"/>
+      <EffectBlock v-model="conf.staticEffects" :effects="staticeffects"/>
+    </CollapsibleSection>
+  </div>
 </template>

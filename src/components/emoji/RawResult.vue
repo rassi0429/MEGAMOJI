@@ -16,8 +16,7 @@ export default defineComponent({
         :key="j"
         :class="`result-cell ${ rounded ? 'mi2' : ''}`"
         :src="col"
-        :height="50"
-        style="max-width: 100%">
+        style="max-height: 50px;max-width: 100%">
   </div>
 </template>
 

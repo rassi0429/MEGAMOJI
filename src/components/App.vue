@@ -18,9 +18,11 @@ import Image from "./icons/Image.vue";
 import Text from "./icons/Text.vue";
 import Emoji from "./icons/Emoji.vue";
 import "../css/destyle.css";
+import Card from "./global/Card.vue";
 
 export default defineComponent({
   components: {
+    Card,
     TextSource,
     FileSource,
     FukumojiSource,
@@ -89,13 +91,13 @@ export default defineComponent({
               :name="name"
               :show-target="ui.showTargetPanel"
               @toggle-show-target="onToggleShowTarget"
-              style="position: fixed"
+              style="position: fixed; height: 80px; width: 100%"
           />
           <TextSource
               :show="ui.mode == 'text'"
               :emoji-size="emojiSize"
               @render="onRender"
-              style="margin-top: 60px"
+              style="margin-top: 80px"
           />
           <Target
               v-model:emoji-size="emojiSize"
