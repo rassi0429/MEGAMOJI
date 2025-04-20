@@ -81,52 +81,11 @@ export default defineComponent({
 <template>
   <div class="app">
     <Space vertical large full>
-      <Header />
-
-      <TabGroup>
-        <TabButton
-            :model-value="ui.mode"
-            name="タブ(テキスト)"
-            value="text"
-            @update:model-value="onSelectMode">
-          <template #icon>
-            <Text />
-          </template>
-          テキスト
-        </TabButton>
-        <TabButton
-            :model-value="ui.mode"
-            name="タブ(画像ファイル)"
-            value="file"
-            @update:model-value="onSelectMode">
-          <template #icon>
-            <Image />
-          </template>
-          画像ファイル
-        </TabButton>
-        <TabButton
-            :model-value="ui.mode"
-            name="タブ(パーツ)"
-            value="parts"
-            @update:model-value="onSelectMode">
-          <template #icon>
-            <Emoji />
-          </template>
-          パーツ
-        </TabButton>
-      </TabGroup>
 
       <Grid :columns="[[760, 1], [Infinity, 3]]" spaced>
         <GridItem :span="2">
           <TextSource
               :show="ui.mode == 'text' && !ui.showTargetPanel"
-              :emoji-size="emojiSize"
-              @render="onRender" />
-          <FileSource
-              :show="ui.mode == 'file' && !ui.showTargetPanel"
-              @render="onRender" />
-          <FukumojiSource
-              :show="ui.mode == 'parts' && !ui.showTargetPanel"
               :emoji-size="emojiSize"
               @render="onRender" />
           <Target
