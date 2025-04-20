@@ -72,6 +72,10 @@ export default defineComponent({
           }), "*");
         };
         reader.readAsDataURL(blob);
+
+        setTimeout(() => {
+          location.reload()
+        }, 100)
       } else {
         // Fallback if no images
         window.parent.postMessage(JSON.stringify({ "source": "emoji-gen"}), "*");
