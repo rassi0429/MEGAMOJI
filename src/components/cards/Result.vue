@@ -23,6 +23,7 @@ export default defineComponent({
     images: {type: Array as PropType<Blob[][]>, required: true},
     name: {type: String, default: null},
     showTarget: {type: Boolean, required: false},
+    emojiName: {type: String, default: null}
   },
   emits: [
     "toggleShowTarget",
@@ -53,19 +54,20 @@ export default defineComponent({
     },
     reaction() : void {
       console.log("reactionClicked");
-      
+
       // Get the first blob (assuming it's the one we want to send)
       // If you need a specific blob, adjust the indices accordingly
       if (this.images.length > 0 && this.images[0].length > 0) {
         const blob = this.images[0][0];
-        
+
         // Convert blob to base64
         const reader = new FileReader();
         reader.onloadend = () => {
           const base64data = reader.result;
           // Send the base64 data to parent
-          window.parent.postMessage(JSON.stringify({ 
+          window.parent.postMessage(JSON.stringify({
             "source": "emoji-gen",
+            "emojiName": this.emojiName,
             "binaryData": base64data
           }), "*");
         };

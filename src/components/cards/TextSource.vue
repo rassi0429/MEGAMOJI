@@ -1,5 +1,5 @@
 <script lang="ts">
-import { defineComponent } from "vue";
+import {defineComponent} from "vue";
 import Analytics from "../../utils/analytics";
 import FontSelectBlock from "../formblocks/FontSelectBlock.vue";
 import FontColorSelectBlock from "../formblocks/FontColorSelectBlock.vue";
@@ -19,22 +19,24 @@ import AlignCenter from "../icons/AlignCenter.vue";
 import AlignLeft from "../icons/AlignLeft.vue";
 import AlignRight from "../icons/AlignRight.vue";
 
-import { ColorStop } from "../../types";
-import { absColor } from "../../utils/color";
-import { makeTextImage } from "../../utils/textimage";
-import { EMOJI_SIZE } from "../../constants/emoji";
+import {ColorStop} from "../../types";
+import {absColor} from "../../utils/color";
+import {makeTextImage} from "../../utils/textimage";
+import {EMOJI_SIZE} from "../../constants/emoji";
 import fonts from "../../constants/fonts";
+import Input from "../inputs/Input.vue";
 
 type PaddingOption = { label: string, value: number };
 
 const PADDING_OPTIONS = [
-  { label: "極小 (推奨)", value: 0.02 },
-  { label: "大きめ (角丸対応)", value: 0.1 },
-  { label: "なし", value: 0 },
+  {label: "極小 (推奨)", value: 0.02},
+  {label: "大きめ (角丸対応)", value: 0.1},
+  {label: "なし", value: 0},
 ];
 
 export default defineComponent({
   components: {
+    Input,
     FontSelectBlock,
     FontColorSelectBlock,
     OutlineBlock,
@@ -54,8 +56,8 @@ export default defineComponent({
     AlignRight,
   },
   props: {
-    show: { type: Boolean, required: true },
-    emojiSize: { type: Number, default: null },
+    show: {type: Boolean, required: true},
+    emojiSize: {type: Number, default: null},
   },
   emits: [
     "render",
@@ -66,6 +68,8 @@ export default defineComponent({
       conf: {
         /* basic */
         content: "",
+        emojiName: "",
+        emojiNameValid: false,
         align: "stretch",
         color: "#ffda00",
         gradient: [] as ColorStop[],
@@ -104,6 +108,11 @@ export default defineComponent({
       },
       deep: true,
     },
+    emojiName: {
+      handler(): void {
+        this.render(true);
+      },
+    },
     emojiSize: {
       handler(): void {
         this.render(true);
@@ -114,6 +123,44 @@ export default defineComponent({
     Analytics.changeFont(this.conf.font);
   },
   methods: {
+    validateEmojiName(value: string): void {
+      // Filter out non-alphanumeric characters
+      const validatedName = value.replace(/[^a-zA-Z0-9]/g, '');
+
+      // Update the emojiName with the validated value
+      this.conf.emojiName = validatedName;
+
+      // Set emojiNameValid based on whether the name is at least 1 character long
+      this.conf.emojiNameValid = validatedName.length >= 1;
+    },
+    preventNonAlphanumeric(event: KeyboardEvent): void {
+      // Allow only alphanumeric keys, plus control keys like backspace, delete, arrows, etc.
+      const isAlphanumeric = /^[a-zA-Z0-9]$/.test(event.key);
+      const isControlKey = event.key.length > 1; // Control keys like Backspace, Delete, arrows, etc.
+
+      if (!isAlphanumeric && !isControlKey) {
+        event.preventDefault();
+      }
+    },
+    handleCompositionEnd(event: CompositionEvent): void {
+      // This event fires when IME composition is completed
+      // We need to validate the input immediately after IME confirmation
+      const input = event.target as HTMLInputElement;
+      const value = input.value;
+
+      // Filter out non-alphanumeric characters
+      const validatedName = value.replace(/[^a-zA-Z0-9]/g, '');
+
+      // Update the input value directly
+      input.value = validatedName;
+
+      // Also update our model
+      this.conf.emojiName = validatedName;
+      this.conf.emojiNameValid = validatedName.length >= 1;
+
+      // Prevent the default behavior to ensure our filtered value is used
+      event.preventDefault();
+    },
     render(dirty?: boolean): void {
       if (dirty) {
         this.dirty = true;
@@ -125,21 +172,22 @@ export default defineComponent({
       this.dirty = false;
       if (this.conf.content) {
         const canvas = makeTextImage(
-          this.conf.content,
-          this.conf.color,
-          this.conf.font,
-          this.emojiSize || EMOJI_SIZE,
-          this.conf.align,
-          Number(this.conf.lineSpacing),
-          this.absoluteOutlines,
-          this.conf.outlineThickness,
-          this.conf.outlineX,
-          this.conf.outlineY,
-          this.absoluteGradient,
-          Number(this.conf.paddingValue),
+            this.conf.content,
+            this.conf.color,
+            this.conf.font,
+            this.emojiSize || EMOJI_SIZE,
+            this.conf.align,
+            Number(this.conf.lineSpacing),
+            this.absoluteOutlines,
+            this.conf.outlineThickness,
+            this.conf.outlineX,
+            this.conf.outlineY,
+            this.absoluteGradient,
+            Number(this.conf.paddingValue),
         );
         const name = this.conf.content.replace(/\n/g, "");
-        this.$emit("render", canvas, name);
+        const emojiName = this.conf.emojiName.replace(/\n/g, "");
+        this.$emit("render", canvas, name, emojiName);
       }
       window.setTimeout(() => {
         this.running = false;
@@ -159,10 +207,21 @@ export default defineComponent({
       <GridItem>
         <FontSelectBlock
             v-model="conf.font"
-            :show-details="showDetails" />
+            :show-details="showDetails"/>
       </GridItem>
       <GridItem :span="2">
         <Space vertical xlarge full>
+          <Fieldset label="絵文字名(アルファベット)">
+              <Input
+                  :value="conf.emojiName"
+                  name="絵文字名"
+                  block
+                  autofocus
+                  :rows="1"
+                  @input="validateEmojiName($event.target.value)"
+                  @keydown="preventNonAlphanumeric"
+                  @compositionend="handleCompositionEnd"/>
+          </Fieldset>
           <Fieldset label="テキスト (改行可)">
             <Space vertical full>
               <Textarea
@@ -170,7 +229,7 @@ export default defineComponent({
                   name="テキスト"
                   block
                   autofocus
-                  :rows="2" />
+                  :rows="2"/>
               <div>
                 <select
                     v-model="conf.align"
@@ -184,7 +243,7 @@ export default defineComponent({
                 <FontColorSelectBlock
                     v-model="conf.color"
                     v-model:gradient="conf.gradient"
-                    :show-details="true" />
+                    :show-details="true"/>
               </div>
             </Space>
           </Fieldset>
@@ -194,14 +253,14 @@ export default defineComponent({
               v-model:posX="conf.outlineX"
               v-model:posY="conf.outlineY"
               :base-color="conf.color"
-              :show-details="showDetails" />
+              :show-details="showDetails"/>
           <Fieldset v-if="showDetails" label="行間 (文字分)">
             <Slider
                 v-model="conf.lineSpacing"
                 block
                 :min="0"
                 :max="1"
-                :step="0.01" />
+                :step="0.01"/>
           </Fieldset>
           <Fieldset v-if="showDetails" label="余白">
             <Slider
@@ -209,7 +268,7 @@ export default defineComponent({
                 block
                 :min="0"
                 :max="0.5"
-                :step="0.01" />
+                :step="0.01"/>
           </Fieldset>
           <!-- <Fieldset v-else label="余白">
             <Select

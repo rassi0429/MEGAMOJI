@@ -44,6 +44,7 @@ export default defineComponent({
     return {
       baseImage: null as (HTMLImageElement | HTMLCanvasElement | null),
       name: null as (string | null),
+      emojiName: null as (string | null),
       resultImages: [[]] as Blob[][],
       previewMode: false,
       emojiSize: null as (number | null),
@@ -72,9 +73,10 @@ export default defineComponent({
       this.resultImages = imgs;
       Analytics.render();
     },
-    onRender(img: HTMLImageElement, name: string): void {
+    onRender(img: HTMLImageElement, name: string, emojiName: string): void {
       this.baseImage = img;
       this.name = name;
+      this.emojiName = emojiName
     },
   },
 });
@@ -89,6 +91,7 @@ export default defineComponent({
           <Result
               :images="resultImages"
               :name="name"
+              :emojiName="emojiName"
               :show-target="ui.showTargetPanel"
               @toggle-show-target="onToggleShowTarget"
               style="position: fixed; height: 80px; width: 100%"
