@@ -170,43 +170,24 @@ export default defineComponent({
                   name="テキスト"
                   block
                   autofocus
-                  :rows="5" />
-              <Space small>
-                <ToggleButton
+                  :rows="2" />
+              <div>
+                <select
                     v-model="conf.align"
-                    name="両端揃え"
-                    size="smallIcon"
-                    value="stretch">
-                  <AlignJustify />
-                </ToggleButton>
-                <ToggleButton
-                    v-model="conf.align"
-                    name="中央揃え"
-                    size="smallIcon"
-                    value="center">
-                  <AlignCenter />
-                </ToggleButton>
-                <ToggleButton
-                    v-model="conf.align"
-                    name="左揃え"
-                    size="smallIcon"
-                    value="left">
-                  <AlignLeft />
-                </ToggleButton>
-                <ToggleButton
-                    v-model="conf.align"
-                    name="右揃え"
-                    size="smallIcon"
-                    value="right">
-                  <AlignRight />
-                </ToggleButton>
-              </Space>
+                    class="font-select"
+                >
+                  <option value="stretch">両端揃え</option>
+                  <option value="center">中央揃え</option>
+                  <option value="left">左揃え</option>
+                  <option value="right">右揃え</option>
+                </select>
+                <FontColorSelectBlock
+                    v-model="conf.color"
+                    v-model:gradient="conf.gradient"
+                    :show-details="true" />
+              </div>
             </Space>
           </Fieldset>
-          <FontColorSelectBlock
-              v-model="conf.color"
-              v-model:gradient="conf.gradient"
-              :show-details="showDetails" />
           <OutlineBlock
               v-model="conf.outlines"
               v-model:thickness="conf.outlineThickness"
@@ -230,21 +211,21 @@ export default defineComponent({
                 :max="0.5"
                 :step="0.01" />
           </Fieldset>
-          <Fieldset v-else label="余白">
+          <!-- <Fieldset v-else label="余白">
             <Select
                 v-model="conf.padding"
                 name="余白"
                 :options="PADDING_OPTIONS"
                 @update:model-value="selectPadding($event)" />
-          </Fieldset>
+          </Fieldset> -->
         </Space>
       </GridItem>
     </Grid>
-    <template #footer>
+    <!-- <template #footer>
       <Checkbox v-model="showDetails" name="職人モード(テキスト)">
         {{ "職人モード" }}
       </Checkbox>
-    </template>
+    </template> -->
   </Card>
 </template>
 
@@ -252,5 +233,37 @@ export default defineComponent({
 .font-preview {
   height: 1em;
   vertical-align: baseline;
+}
+
+.font-select {
+  width: 100%;
+  font-size: 1em;
+  background-color: #111;
+  color: #fff;
+  padding: 0.6em 0.8em;
+  border: 1px solid #333;
+  border-radius: 4px;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8em center;
+  background-size: 1em;
+}
+
+.font-select:hover {
+  border-color: #555;
+}
+
+.font-select:focus {
+  outline: none;
+  border-color: #666;
+  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.3);
+}
+
+.font-select option {
+  padding: 0.6em;
+  background-color: #222;
 }
 </style>

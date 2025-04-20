@@ -15,7 +15,9 @@ export default defineComponent({
         v-for="(col, j) in row"
         :key="j"
         :class="`result-cell ${ rounded ? 'mi2' : ''}`"
-        :src="col">
+        :src="col"
+        :height="50"
+        style="max-width: 100%">
   </div>
 </template>
 

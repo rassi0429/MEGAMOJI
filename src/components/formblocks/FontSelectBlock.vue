@@ -92,7 +92,7 @@ export default defineComponent({
         </optgroup>
       </select>
     </Fieldset>
-    <Fieldset label="その他のフォント">
+    <!-- <Fieldset label="その他のフォント">
       <Space vertical>
         <FileSelect type="font" name="ファイルを選ぶ" @load="onLoadFont">
           <Text /> ファイルを選ぶ
@@ -103,7 +103,7 @@ export default defineComponent({
             name="font-spec"
             block :error="!stringIsValid" />
       </Space>
-    </Fieldset>
+    </Fieldset> -->
   </Space>
 </template>
 

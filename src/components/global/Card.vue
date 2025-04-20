@@ -26,9 +26,9 @@ export default defineComponent({
 
 <style scoped>
 .card {
-  background-color: var(--accentBg);
-  border: 1px solid var(--border);
-  border-radius: var(--borderRadius);
+  //background-color: var(--accentBg);
+  //border: 1px solid var(--border);
+  //border-radius: var(--borderRadius);
 }
 
 .content {

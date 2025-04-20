@@ -48,7 +48,7 @@ export default defineComponent({
       /* ui */
       ui: {
         mode: "text",
-        showTargetPanel: false,
+        showTargetPanel: true,
         showTargetDetails: false,
       },
     };
@@ -83,25 +83,25 @@ export default defineComponent({
     <Space vertical large full>
 
       <Grid :columns="[[760, 1], [Infinity, 3]]" spaced>
-        <GridItem :span="2">
+        <GridItem :span="3">
+          <Result
+              :images="resultImages"
+              :name="name"
+              :show-target="ui.showTargetPanel"
+              @toggle-show-target="onToggleShowTarget"
+              style="position: fixed"
+          />
           <TextSource
-              :show="ui.mode == 'text' && !ui.showTargetPanel"
+              :show="ui.mode == 'text'"
               :emoji-size="emojiSize"
-              @render="onRender" />
+              @render="onRender"
+              style="margin-top: 60px"
+          />
           <Target
               v-model:emoji-size="emojiSize"
               :show="ui.showTargetPanel"
               :base-image="baseImage"
               @render="onRenderTarget" />
-        </GridItem>
-        <GridItem>
-          <Tutorial v-if="!baseImage" />
-          <Result
-              v-else
-              :images="resultImages"
-              :name="name"
-              :show-target="ui.showTargetPanel"
-              @toggle-show-target="onToggleShowTarget" />
         </GridItem>
       </Grid>
 
@@ -197,8 +197,8 @@ export default defineComponent({
   --spacingSmall: 0.25rem;
   --spacingInlineSmall: 0.375rem;
   --spacingMedium: 0.5rem;
-  --spacingLarge: 1rem;
-  --spacingXLarge: 1.75rem;
+  --spacingLarge: 0.2rem;
+  --spacingXLarge: 0.2rem;
   --paddingV: 0.75rem;
   --paddingH: 1rem;
   --padding: var(--paddingV) var(--paddingH);

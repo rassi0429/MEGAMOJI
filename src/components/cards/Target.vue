@@ -109,9 +109,9 @@ export default defineComponent({
         easing: easings[0],
         duration: SPEED_OPTIONS[2].value,
         backgroundColor: "#ffffff",
-        transparent: false,
+        transparent: true,
       },
-      showDetails: false,
+      showDetails: true,
       devMode: false,
       /* internals */
       running: false,
@@ -277,62 +277,62 @@ export default defineComponent({
           <EffectBlock v-model="conf.webglEffects" :effects="webgleffects" />
           <EffectBlock v-model="conf.effects" :effects="effects" />
           <EffectBlock v-if="showDetails" v-model="conf.effects" :effects="bgeffects" />
-          <Fieldset v-if="showDetails" label="画像サイズ">
-            <Space vertical full>
-              <Checkbox
-                  :model-value="emojiSize === null"
-                  name="画像サイズ自動"
-                  @update:model-value="toggleAutoSize">
-                自動
-              </Checkbox>
-              <Number
-                  v-if="emojiSize !== null"
-                  :model-value="emojiSize"
-                  :min="1"
-                  @update:model-value="changeEmojiSize" />
-            </Space>
-          </Fieldset>
-          <Fieldset v-if="showDetails && isDev" label="開発者向け">
-            <Button danger type="text" name="開発者モード" @click="devMode = true">
-              <template #icon>
-                🔨
-              </template>
-              開発者モード
-            </Button>
-          </Fieldset>
+<!--          <Fieldset v-if="showDetails" label="画像サイズ">-->
+<!--            <Space vertical full>-->
+<!--              <Checkbox-->
+<!--                  :model-value="emojiSize === null"-->
+<!--                  name="画像サイズ自動"-->
+<!--                  @update:model-value="toggleAutoSize">-->
+<!--                自動-->
+<!--              </Checkbox>-->
+<!--              <Number-->
+<!--                  v-if="emojiSize !== null"-->
+<!--                  :model-value="emojiSize"-->
+<!--                  :min="1"-->
+<!--                  @update:model-value="changeEmojiSize" />-->
+<!--            </Space>-->
+<!--          </Fieldset>-->
+<!--          <Fieldset v-if="showDetails && isDev" label="開発者向け">-->
+<!--            <Button danger type="text" name="開発者モード" @click="devMode = true">-->
+<!--              <template #icon>-->
+<!--                🔨-->
+<!--              </template>-->
+<!--              開発者モード-->
+<!--            </Button>-->
+<!--          </Fieldset>-->
         </Space>
       </GridItem>
       <GridItem>
         <Space vertical xlarge full>
-          <Fieldset v-if="!showDetails" label="切り抜き">
+          <Fieldset v-if="showDetails" label="切り抜き">
             <Select
                 v-model="conf.trimming"
                 name="切り抜き"
                 :options="TRIMMING_OPTIONS"
                 @update:model-value="refreshDefaultSettings" />
           </Fieldset>
-          <CellcountBlock
-              v-if="showDetails"
-              v-model="conf.cells"
-              @update:model-value="refreshDefaultSettings" />
-          <Fieldset v-if="showDetails" label="トリミング (横)">
-            <Slider
-                v-model="conf.trimH"
-                block
-                nonzero
-                :marks="[0, baseImage.width]"
-                :min="baseImage ? - Math.floor(baseImage.width * 0.5) : 0"
-                :max="baseImage ? Math.ceil(baseImage.width * 1.5) : 0" />
-          </Fieldset>
-          <Fieldset v-if="showDetails" label="トリミング (縦)">
-            <Slider
-                v-model="conf.trimV"
-                block
-                nonzero
-                :marks="[0, baseImage.height]"
-                :min="baseImage ? - Math.floor(baseImage.height * 0.5) : 0"
-                :max="baseImage ? Math.ceil(baseImage.height * 1.5) : 0" />
-          </Fieldset>
+<!--          <CellcountBlock-->
+<!--              v-if="showDetails"-->
+<!--              v-model="conf.cells"-->
+<!--              @update:model-value="refreshDefaultSettings" />-->
+<!--          <Fieldset v-if="showDetails" label="トリミング (横)">-->
+<!--            <Slider-->
+<!--                v-model="conf.trimH"-->
+<!--                block-->
+<!--                nonzero-->
+<!--                :marks="[0, baseImage.width]"-->
+<!--                :min="baseImage ? - Math.floor(baseImage.width * 0.5) : 0"-->
+<!--                :max="baseImage ? Math.ceil(baseImage.width * 1.5) : 0" />-->
+<!--          </Fieldset>-->
+<!--          <Fieldset v-if="showDetails" label="トリミング (縦)">-->
+<!--            <Slider-->
+<!--                v-model="conf.trimV"-->
+<!--                block-->
+<!--                nonzero-->
+<!--                :marks="[0, baseImage.height]"-->
+<!--                :min="baseImage ? - Math.floor(baseImage.height * 0.5) : 0"-->
+<!--                :max="baseImage ? Math.ceil(baseImage.height * 1.5) : 0" />-->
+<!--          </Fieldset>-->
           <Fieldset v-if="showDetails" label="アス比">
             <Slider
                 v-model="conf.targetAspect"
@@ -344,7 +344,7 @@ export default defineComponent({
                 :max="Math.max(5, naturalAspect)" />
           </Fieldset>
           <EffectBlock v-model="conf.staticEffects" :effects="staticeffects" />
-          <Fieldset v-if="!showDetails" label="速度 (アニメ)">
+          <Fieldset v-if="showDetails" label="速度 (アニメ)">
             <Select
                 v-model="conf.speed"
                 name="速度(アニメ)"
@@ -377,11 +377,11 @@ export default defineComponent({
         </Space>
       </GridItem>
     </Grid>
-    <template v-if="!devMode" #footer>
-      <Checkbox v-model="showDetails" name="職人モード(効果)">
-        {{ "職人モード" }}
-      </Checkbox>
-    </template>
+<!--    <template v-if="!devMode" #footer>-->
+<!--      <Checkbox v-model="showDetails" name="職人モード(効果)">-->
+<!--        {{ "職人モード" }}-->
+<!--      </Checkbox>-->
+<!--    </template>-->
     <DevTool
         v-if="devMode"
         v-model:no-crop="conf.noCrop"

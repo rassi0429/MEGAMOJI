@@ -57,35 +57,24 @@ export default defineComponent({
 
 <template>
   <Space vertical large>
-    <Card class="result" title="プレビュー">
+    <Card class="result">
       <Space vertical large>
         <RawResult
-            v-if="!previewMode"
             :images="resultImageUrls"
             :rounded="rounded" />
-        <Preview
-            v-if="previewMode"
-            :images="resultImageUrls"
-            :dark-mode="false"
-            :rounded="rounded" />
-        <Preview
-            v-if="previewMode"
-            :images="resultImageUrls"
-            :dark-mode="true"
-            :rounded="rounded" />
-        <span v-if="isDev && images[0].length === 1">
-          ファイルサイズ: {{ totalSize / 1024 }} KiB
-        </span>
-        <Checkbox v-model="previewMode" name="サンプル表示">
+<!--        <span v-if="isDev && images[0].length === 1">-->
+<!--          ファイルサイズ: {{ totalSize / 1024 }} KiB-->
+<!--        </span>-->
+        <!-- <Checkbox v-model="previewMode" name="サンプル表示">
           {{ "サンプル表示" }}
         </Checkbox>
         <Checkbox v-model="rounded" name="角丸">
           {{ "角丸プレビュー" }}
-        </Checkbox>
+        </Checkbox> -->
       </Space>
     </Card>
     <Space class="buttons">
-      <Button
+      <!-- <Button
           v-if="showTarget"
           name="効果をつける(戻る)"
           @click="$emit('toggleShowTarget', $event)">
@@ -102,13 +91,13 @@ export default defineComponent({
           <Effect />
         </template>
         効果をつける
-      </Button>
-      <Button type="primary" name="保存" @click="onDownload">
-        <template #icon>
-          <Save />
-        </template>
-        絵文字を保存
-      </Button>
+      </Button> -->
+<!--      <Button type="primary" name="保存" @click="onDownload">-->
+<!--        <template #icon>-->
+<!--          <Save />-->
+<!--        </template>-->
+<!--        絵文字を保存-->
+<!--      </Button>-->
     </Space>
   </Space>
 </template>
