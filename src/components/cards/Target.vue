@@ -281,6 +281,19 @@ export default defineComponent({
           :options="TRIMMING_OPTIONS"
           @update:model-value="refreshDefaultSettings"/>
     </Fieldset>
+    
+    <CollapsibleSection label="アス比" :default-open="false">
+    <Fieldset v-if="showDetails" label="アス比">
+            <Slider
+                v-model="conf.targetAspect"
+                block
+                nonzero
+                :step="0.01"
+                :marks="[1, naturalAspect]"
+                :min="Math.min(0.2, naturalAspect)"
+                :max="Math.max(5, naturalAspect)" />
+          </Fieldset>
+        </CollapsibleSection>
     <CollapsibleSection label="アニメーション" :default-open="false">
       <Space vertical full>
         <Select
