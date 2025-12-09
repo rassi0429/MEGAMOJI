@@ -71,14 +71,22 @@ export default defineComponent({
   methods: {
     handleMisskeyMessage(event: MessageEvent): void {
       try {
-        const data = JSON.parse(event.data);
-        if (data.source === 'misskey-emoji-picker') {
+        // データが文字列の場合はパース、オブジェクトの場合はそのまま使用
+        let data = event.data;
+        if (typeof data === 'string') {
+          data = JSON.parse(data);
+        }
+
+        if (data && data.source === 'misskey-emoji-picker') {
+          console.log('Received from Misskey:', data.type, data);
+
           if (data.type === 'emoji-list') {
             // 既存絵文字リストを受信
             this.existingEmojis = data.emojis || [];
-            console.log('Received emoji list from Misskey:', this.existingEmojis.length, 'emojis');
+            console.log('Emoji list updated:', this.existingEmojis.length, 'emojis');
           } else if (data.type === 'result') {
             // 登録結果を受信
+            console.log('Registration result:', data);
             if (data.success) {
               this.registrationStatus = 'success';
               this.registrationMessage = `絵文字「${data.emojiName}」を登録しました！`;
@@ -99,7 +107,7 @@ export default defineComponent({
           }
         }
       } catch (e) {
-        // JSON parse error - ignore non-JSON messages
+        // 他のメッセージ（React DevToolsなど）は無視
       }
     },
     onToggleShowTarget(): void {
