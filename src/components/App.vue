@@ -130,212 +130,210 @@ export default defineComponent({
 
 <template>
   <div class="app">
-    <Space vertical large full>
+    <!-- 登録ステータス表示 -->
+    <div v-if="registrationStatus" class="registration-status" :class="registrationStatus">
+      {{ registrationMessage }}
+    </div>
 
-      <!-- 登録ステータス表示 -->
-      <div v-if="registrationStatus" class="registration-status" :class="registrationStatus">
-        {{ registrationMessage }}
-      </div>
+    <!-- プレビューエリア -->
+    <div class="preview-area">
+      <Result
+          :images="resultImages"
+          :name="name"
+          :emojiName="emojiName"
+          :existing-emojis="existingEmojis"
+          :registration-status="registrationStatus"
+          :show-target="ui.showTargetPanel"
+          @toggle-show-target="onToggleShowTarget"
+          @registration-start="setRegistrationLoading"
+      />
+    </div>
 
-      <Grid :columns="[[760, 1], [Infinity, 3]]" spaced>
-        <GridItem :span="3">
-          <Result
-              :images="resultImages"
-              :name="name"
-              :emojiName="emojiName"
-              :existing-emojis="existingEmojis"
-              :registration-status="registrationStatus"
-              :show-target="ui.showTargetPanel"
-              @toggle-show-target="onToggleShowTarget"
-              @registration-start="setRegistrationLoading"
-              style="position: fixed; height: 80px; width: 100%"
-          />
-          <TextSource
-              :show="ui.mode == 'text'"
-              :emoji-size="emojiSize"
-              :existing-emojis="existingEmojis"
-              @render="onRender"
-              style="margin-top: 80px"
-          />
-          <Target
-              v-model:emoji-size="emojiSize"
-              :show="ui.showTargetPanel"
-              :base-image="baseImage"
-              @render="onRenderTarget" />
-        </GridItem>
-      </Grid>
-
-      <Footer />
-    </Space>
+    <!-- 入力エリア -->
+    <div class="input-area">
+      <TextSource
+          :show="ui.mode == 'text'"
+          :emoji-size="emojiSize"
+          :existing-emojis="existingEmojis"
+          @render="onRender"
+      />
+      <Target
+          v-model:emoji-size="emojiSize"
+          :show="ui.showTargetPanel"
+          :base-image="baseImage"
+          @render="onRenderTarget" />
+    </div>
   </div>
 </template>
 
 <style>
 :root {
-  /* colors */
-  --fg:             #000000d0;
-  --bg:             #ffffffff;
-  --accentBg:       #00000004;
-  --border:         #00000040;
-  --primaryLighter: #ffb81c; /* l = 80 */
-  --primary:        #eeaa00; /* okhsl(80, 100, 75) */
-  --primaryDarker:  #cd9200; /* l = 65 */
-  --dangerLighter:  #fa837e; /* l = 70 */
-  --danger:         #f76b68; /* okhsl(24, 90, 65) */
-  --dangerDarker:   #e53c42; /* l = 55 */
-  --primaryBg:      #eeaa0020;
-  --dangerBg:       #f76b6820;
-  --primaryShadow:  0 0 0 2px #eeaa0030;
-  --dangerShadow:   0 0 0 2px #f76b6830;
+  /* colors - モダンなダークテーマベース */
+  --fg:             #e8e8e8;
+  --fg-muted:       #a0a0a0;
+  --bg:             #1a1a1a;
+  --bg-secondary:   #252525;
+  --bg-tertiary:    #2d2d2d;
+  --accentBg:       #ffffff08;
+  --border:         #404040;
+  --border-light:   #505050;
 
-  --elevatedBg:      #ffffffff;
-  --elevationShadow: rgb(0 0 0 / 0.19) 0 10px 20px, rgb(0 0 0 / 0.23) 0 6px 6px;
+  /* アクセントカラー */
+  --accent:         #86b300;
+  --accentLighter:  #9ed119;
+  --accentDarker:   #6d9200;
+  --accentBg:       #86b30015;
 
-  --pressableShadowDefault:      0 1px #00000040;
-  --pressableShadowPrimary:      0 1px #00000020, 0 1px var(--primary);
-  --pressableShadowPrimaryHover: 0 1px #00000020, 0 1px var(--primaryLighter);
-  --pressableShadowDanger:       0 1px #00000020, 0 1px var(--danger);
-  --pressableShadowDangerHover:  0 1px #00000020, 0 1px var(--dangerLighter);
+  --primary:        #86b300;
+  --primaryLighter: #9ed119;
+  --primaryDarker:  #6d9200;
+  --primaryBg:      #86b30020;
+  --primaryShadow:  0 0 0 2px #86b30030;
 
-  --distantFg:     var(--bg);
-  --light:         var(--bg);
-  --dark:          var(--fg);
-  --primaryHover:  var(--primaryLighter);
-  --primaryActive: var(--primaryDarker);
-  --dangerHover:   var(--dangerLighter);
-  --dangerActive:  var(--dangerDarker);
-}
+  --danger:         #ff6b6b;
+  --dangerLighter:  #ff8585;
+  --dangerDarker:   #e55555;
+  --dangerBg:       #ff6b6b20;
+  --dangerShadow:   0 0 0 2px #ff6b6b30;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fg:             #ffffffd0;
-    --bg:             #222222ff;
-    --accentBg:       #ffffff10;
-    --border:         #ffffff40;
-    --primaryLighter: #e6af47; /* l = 75 */
-    --primary:        #d7a139; /* okhsl(80, 80, 70) */
-    --primaryDarker:  #c79431; /* l = 65 */
-    --dangerLighter:  #f38882; /* l = 70 */
-    --danger:         #ee736e; /* okhsl(24, 80, 65) */
-    --dangerDarker:   #e65f5c; /* k = 60 */
-    --primaryBg:      #d7a13920;
-    --dangerBg:       #ee736e20;
-    --primaryShadow:  0 0 0 2px #e6af4730;
-    --dangerShadow:   0 0 0 2px #ee736e30;
+  --success:        #51cf66;
+  --successBg:      #51cf6620;
 
-    --elevatedBg:      #555555ff;
-    --elevationShadow: none;
+  --elevatedBg:      #2d2d2d;
+  --elevationShadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
-    --pressableShadowDefault:      0 1px #00000080;
-    --pressableShadowPrimary:      0 1px #00000040, 0 1px var(--primary);
-    --pressableShadowPrimaryHover: 0 1px #00000040, 0 1px var(--primaryDarker);
-    --pressableShadowDanger:       0 1px #00000040, 0 1px var(--danger);
-    --pressableShadowDangerHover:  0 1px #00000040, 0 1px var(--dangerDarker);
-
-    --distantFg:     var(--bg);
-    --light:         var(--fg);
-    --dark:          var(--bg);
-    --primaryHover:  var(--primaryDarker);
-    --primaryActive: var(--primaryLighter);
-    --dangerHover:   var(--dangerDarker);
-    --dangerActive:  var(--dangerLighter);
-  }
-}
-
-:root {
   /* typography */
-  --fontSizeTitle: 28px;
-  --fontSizeXLarge: 18px;
-  --fontSizeLarge: 16px;
-  --fontSizeMedium: 14px;
-  --fontSizeSmallIcon: 16px;
-  --fontSizeIcon: 26px;
-  --fontSizePart: 48px;
-  --multilineTextLineHeight: 1.5;
+  --fontSizeSmall: 12px;
+  --fontSizeMedium: 13px;
+  --fontSizeLarge: 14px;
+  --fontSizeXLarge: 16px;
 
   /* layout */
-  --spacingSmall: 0.25rem;
-  --spacingInlineSmall: 0.375rem;
-  --spacingMedium: 0.5rem;
-  --spacingLarge: 0.2rem;
-  --spacingXLarge: 0.2rem;
-  --paddingV: 0.75rem;
-  --paddingH: 1rem;
-  --padding: var(--paddingV) var(--paddingH);
-  --paddingMinimal: 4px;
-  --borderRadiusMicro: 4px; /* elements that should not be "too rounded" (eg. checkboxes) */
-  --borderRadiusSmall: 4px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
   --borderRadius: 8px;
-
-  /* other */
-  --textareaLineHeight: 1.4;
-  --selectPadding: var(--paddingV) calc(var(--paddingH) + 1rem) var(--paddingV) var(--paddingH);
-  --numberPadding: var(--paddingV) calc(var(--paddingH) + 2rem) var(--paddingV) var(--paddingH);
-  --sliderRailHeight: 0.375em;
-  --sliderMarkHeight: 0.75em;
-  --sliderKnobSize: 1.25em;
-  --sliderValueMargin: 0.125em;
-  --sliderValueWidth: 2.5em;
-  --colorSliderRailHeight: 1.125em;
-  --mediaIconSize: 34px;
-  --tabButtonPadding: 0 calc(var(--paddingH) * 0.75) calc(var(--paddingV) - 3px);
+  --borderRadiusSmall: 6px;
 }
 
-/* stylelint-disable-next-line selector-max-type */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow-x: hidden;
+}
+
 html {
-  padding: var(--spacingLarge);
-  font-family:
-    "Helvetica Neue",
-    Arial,
-    "Hiragino Kaku Gothic ProN",
-    "Hiragino Sans",
-    Meiryo,
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   font-size: var(--fontSizeMedium);
-  line-height: 1;
+  line-height: 1.4;
   color: var(--fg);
-  background-color: var(--bg);
+  background: var(--bg);
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding: var(--spacing-sm);
+  gap: var(--spacing-sm);
+}
+
+/* プレビューエリア */
+.preview-area {
+  background: var(--bg-secondary);
+  border-radius: var(--borderRadius);
+  padding: var(--spacing-md);
+  border: 1px solid var(--border);
+}
+
+/* 入力エリア */
+.input-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  overflow-y: auto;
+}
+
+/* 共通入力スタイル */
+input, textarea, select {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: var(--borderRadiusSmall);
+  color: var(--fg);
+  font-size: var(--fontSizeMedium);
+  padding: 10px 12px;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accentBg);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--fg-muted);
 }
 
 /* 登録ステータス表示 */
 .registration-status {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  right: var(--spacing-sm);
   padding: 12px 16px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 600;
+  font-size: var(--fontSizeMedium);
   z-index: 1000;
+  border-radius: var(--borderRadius);
   animation: slideDown 0.3s ease-out;
 }
 
 .registration-status.loading {
   background: var(--primaryBg);
   color: var(--primary);
-  border-bottom: 2px solid var(--primary);
+  border: 1px solid var(--primary);
 }
 
 .registration-status.success {
-  background: #d4edda;
-  color: #155724;
-  border-bottom: 2px solid #28a745;
+  background: var(--successBg);
+  color: var(--success);
+  border: 1px solid var(--success);
 }
 
 .registration-status.error {
   background: var(--dangerBg);
   color: var(--danger);
-  border-bottom: 2px solid var(--danger);
+  border: 1px solid var(--danger);
 }
 
 @keyframes slideDown {
   from {
-    transform: translateY(-100%);
+    transform: translateY(-20px);
     opacity: 0;
   }
   to {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+/* ラベルスタイル */
+label, .label {
+  display: block;
+  font-size: var(--fontSizeSmall);
+  color: var(--fg-muted);
+  margin-bottom: var(--spacing-xs);
+  font-weight: 500;
 }
 </style>

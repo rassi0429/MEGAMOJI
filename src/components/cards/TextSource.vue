@@ -207,152 +207,178 @@ export default defineComponent({
 </script>
 
 <template>
-  <Card v-if="show">
-    <Grid :columns="[[450, 1], [Infinity, 3]]" spaced>
-      <GridItem>
+  <div v-if="show" class="text-source">
+    <!-- 絵文字名 -->
+    <div class="form-group">
+      <label class="form-label">絵文字名</label>
+      <input
+          type="text"
+          :value="conf.emojiName"
+          class="form-input"
+          :class="{ 'input-error': isEmojiNameDuplicate }"
+          placeholder="英数字のみ"
+          @input="validateEmojiName($event.target.value)"
+          @keydown="preventNonAlphanumeric"
+          @compositionend="handleCompositionEnd"/>
+      <div v-if="isEmojiNameDuplicate" class="duplicate-warning">
+        この絵文字名は既に使用されています
+      </div>
+    </div>
+
+    <!-- テキスト入力 -->
+    <div class="form-group">
+      <label class="form-label">テキスト</label>
+      <textarea
+          v-model="conf.content"
+          class="form-textarea"
+          placeholder="絵文字にしたい文字を入力"
+          rows="2"/>
+    </div>
+
+    <!-- オプション行 -->
+    <div class="options-row">
+      <!-- フォント選択 -->
+      <div class="option-item">
+        <label class="form-label">フォント</label>
         <FontSelectBlock
             v-model="conf.font"
-            :show-details="showDetails"/>
-      </GridItem>
-      <GridItem :span="2">
-        <Space vertical xlarge full>
-          <Fieldset label="絵文字名(アルファベット)">
-              <Input
-                  :value="conf.emojiName"
-                  name="絵文字名"
-                  block
-                  autofocus
-                  :rows="1"
-                  :class="{ 'input-error': isEmojiNameDuplicate }"
-                  @input="validateEmojiName($event.target.value)"
-                  @keydown="preventNonAlphanumeric"
-                  @compositionend="handleCompositionEnd"/>
-              <div v-if="isEmojiNameDuplicate" class="duplicate-warning">
-                この絵文字名は既に使用されています
-              </div>
-          </Fieldset>
-          <Fieldset label="テキスト (改行可)">
-            <Space vertical full>
-              <Textarea
-                  v-model="conf.content"
-                  name="テキスト"
-                  block
-                  autofocus
-                  :rows="2"/>
-              <div>
-                <select
-                    v-model="conf.align"
-                    class="font-select"
-                >
-                  <option value="stretch">両端揃え</option>
-                  <option value="center">中央揃え</option>
-                  <option value="left">左揃え</option>
-                  <option value="right">右揃え</option>
-                </select>
-                <FontColorSelectBlock
-                    v-model="conf.color"
-                    v-model:gradient="conf.gradient"
-                    :show-details="true"/>
-              </div>
-            </Space>
-          </Fieldset>
-          <OutlineBlock
-              v-model="conf.outlines"
-              v-model:thickness="conf.outlineThickness"
-              v-model:posX="conf.outlineX"
-              v-model:posY="conf.outlineY"
-              :base-color="conf.color"
-              :show-details="showDetails"/>
-          <Fieldset v-if="showDetails" label="行間 (文字分)">
-            <Slider
-                v-model="conf.lineSpacing"
-                block
-                :min="0"
-                :max="1"
-                :step="0.01"/>
-          </Fieldset>
-          <Fieldset v-if="showDetails" label="余白">
-            <Slider
-                v-model="conf.paddingValue"
-                block
-                :min="0"
-                :max="0.5"
-                :step="0.01"/>
-          </Fieldset>
-          <!-- <Fieldset v-else label="余白">
-            <Select
-                v-model="conf.padding"
-                name="余白"
-                :options="PADDING_OPTIONS"
-                @update:model-value="selectPadding($event)" />
-          </Fieldset> -->
-        </Space>
-      </GridItem>
-    </Grid>
-    <!-- <template #footer>
-      <Checkbox v-model="showDetails" name="職人モード(テキスト)">
-        {{ "職人モード" }}
-      </Checkbox>
-    </template> -->
-  </Card>
+            :show-details="false"
+            compact/>
+      </div>
+
+      <!-- 揃え -->
+      <div class="option-item">
+        <label class="form-label">揃え</label>
+        <select v-model="conf.align" class="form-select">
+          <option value="stretch">両端</option>
+          <option value="center">中央</option>
+          <option value="left">左</option>
+          <option value="right">右</option>
+        </select>
+      </div>
+
+      <!-- 色 -->
+      <div class="option-item color-option">
+        <label class="form-label">色</label>
+        <FontColorSelectBlock
+            v-model="conf.color"
+            v-model:gradient="conf.gradient"
+            :show-details="false"
+            compact/>
+      </div>
+    </div>
+
+    <!-- 縁取り（シンプル化） -->
+    <div class="form-group">
+      <OutlineBlock
+          v-model="conf.outlines"
+          v-model:thickness="conf.outlineThickness"
+          v-model:posX="conf.outlineX"
+          v-model:posY="conf.outlineY"
+          :base-color="conf.color"
+          :show-details="false"
+          compact/>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.font-preview {
-  height: 1em;
-  vertical-align: baseline;
+.text-source {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 12px);
 }
 
-.font-select {
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+}
+
+.form-label {
+  font-size: var(--fontSizeSmall, 12px);
+  color: var(--fg-muted, #a0a0a0);
+  font-weight: 500;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+  background: var(--bg-tertiary, #2d2d2d);
+  border: 1px solid var(--border, #404040);
+  border-radius: var(--borderRadiusSmall, 6px);
+  color: var(--fg, #e8e8e8);
+  font-size: var(--fontSizeMedium, 13px);
+  padding: 10px 12px;
   width: 100%;
-  font-size: 1em;
-  background-color: #111;
-  color: #fff;
-  padding: 0.6em 0.8em;
-  border: 1px solid #333;
-  border-radius: 4px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--accent, #86b300);
+  box-shadow: 0 0 0 2px var(--accentBg, rgba(134, 179, 0, 0.15));
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--fg-muted, #666);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 60px;
+  line-height: 1.4;
+}
+
+.form-select {
   appearance: none;
   cursor: pointer;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.8em center;
-  background-size: 1em;
+  background-position: right 10px center;
+  background-size: 14px;
+  padding-right: 32px;
 }
 
-.font-select:hover {
-  border-color: #555;
+.options-row {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  flex-wrap: wrap;
 }
 
-.font-select:focus {
-  outline: none;
-  border-color: #666;
-  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.3);
+.option-item {
+  flex: 1;
+  min-width: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
 }
 
-.font-select option {
-  padding: 0.6em;
-  background-color: #222;
+.color-option {
+  flex: 0 0 auto;
 }
 
 .duplicate-warning {
-  color: var(--danger);
-  font-size: 12px;
-  margin-top: 4px;
-  padding: 4px 8px;
-  background: var(--dangerBg);
-  border-radius: 4px;
+  color: var(--danger, #ff6b6b);
+  font-size: 11px;
+  padding: 6px 10px;
+  background: var(--dangerBg, rgba(255, 107, 107, 0.15));
+  border-radius: var(--borderRadiusSmall, 6px);
+  border: 1px solid var(--danger, #ff6b6b);
   animation: shake 0.3s ease-in-out;
 }
 
 .input-error {
-  border-color: var(--danger) !important;
-  box-shadow: var(--dangerShadow) !important;
+  border-color: var(--danger, #ff6b6b) !important;
+  box-shadow: 0 0 0 2px var(--dangerBg, rgba(255, 107, 107, 0.15)) !important;
 }
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
 }
 </style>
