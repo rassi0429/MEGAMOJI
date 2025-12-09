@@ -87,9 +87,11 @@ export default defineComponent({
           } else if (data.type === 'result') {
             // 登録結果を受信
             console.log('Registration result:', data);
+            console.log('Before update - status:', this.registrationStatus, 'message:', this.registrationMessage);
             if (data.success) {
               this.registrationStatus = 'success';
               this.registrationMessage = `絵文字「${data.emojiName}」を登録しました！`;
+              console.log('After update - status:', this.registrationStatus, 'message:', this.registrationMessage);
               // 3秒後にリセット
               setTimeout(() => {
                 this.registrationStatus = null;
@@ -98,6 +100,7 @@ export default defineComponent({
             } else {
               this.registrationStatus = 'error';
               this.registrationMessage = data.error || '登録に失敗しました';
+              console.log('After update (error) - status:', this.registrationStatus, 'message:', this.registrationMessage);
               // 5秒後にリセット
               setTimeout(() => {
                 this.registrationStatus = null;
