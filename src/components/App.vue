@@ -48,6 +48,10 @@ export default defineComponent({
       resultImages: [[]] as Blob[][],
       previewMode: false,
       emojiSize: null as (number | null),
+      /* Misskey連携用 */
+      existingEmojis: [] as string[],
+      registrationStatus: null as ('loading' | 'success' | 'error' | null),
+      registrationMessage: '' as string,
       /* ui */
       ui: {
         mode: "text",
@@ -58,8 +62,46 @@ export default defineComponent({
   },
   mounted() {
     Analytics.switchMode("text");
+    // Misskeyからのメッセージを受信
+    window.addEventListener('message', this.handleMisskeyMessage);
+  },
+  beforeUnmount() {
+    window.removeEventListener('message', this.handleMisskeyMessage);
   },
   methods: {
+    handleMisskeyMessage(event: MessageEvent): void {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.source === 'misskey-emoji-picker') {
+          if (data.type === 'emoji-list') {
+            // 既存絵文字リストを受信
+            this.existingEmojis = data.emojis || [];
+            console.log('Received emoji list from Misskey:', this.existingEmojis.length, 'emojis');
+          } else if (data.type === 'result') {
+            // 登録結果を受信
+            if (data.success) {
+              this.registrationStatus = 'success';
+              this.registrationMessage = `絵文字「${data.emojiName}」を登録しました！`;
+              // 3秒後にリセット
+              setTimeout(() => {
+                this.registrationStatus = null;
+                this.registrationMessage = '';
+              }, 3000);
+            } else {
+              this.registrationStatus = 'error';
+              this.registrationMessage = data.error || '登録に失敗しました';
+              // 5秒後にリセット
+              setTimeout(() => {
+                this.registrationStatus = null;
+                this.registrationMessage = '';
+              }, 5000);
+            }
+          }
+        }
+      } catch (e) {
+        // JSON parse error - ignore non-JSON messages
+      }
+    },
     onToggleShowTarget(): void {
       this.ui.showTargetPanel = !this.ui.showTargetPanel;
       Analytics.switchMode(this.ui.showTargetPanel ? "target" : this.ui.mode, true);
@@ -78,6 +120,10 @@ export default defineComponent({
       this.name = name;
       this.emojiName = emojiName
     },
+    setRegistrationLoading(): void {
+      this.registrationStatus = 'loading';
+      this.registrationMessage = '登録中...';
+    },
   },
 });
 </script>
@@ -86,19 +132,28 @@ export default defineComponent({
   <div class="app">
     <Space vertical large full>
 
+      <!-- 登録ステータス表示 -->
+      <div v-if="registrationStatus" class="registration-status" :class="registrationStatus">
+        {{ registrationMessage }}
+      </div>
+
       <Grid :columns="[[760, 1], [Infinity, 3]]" spaced>
         <GridItem :span="3">
           <Result
               :images="resultImages"
               :name="name"
               :emojiName="emojiName"
+              :existing-emojis="existingEmojis"
+              :registration-status="registrationStatus"
               :show-target="ui.showTargetPanel"
               @toggle-show-target="onToggleShowTarget"
+              @registration-start="setRegistrationLoading"
               style="position: fixed; height: 80px; width: 100%"
           />
           <TextSource
               :show="ui.mode == 'text'"
               :emoji-size="emojiSize"
+              :existing-emojis="existingEmojis"
               @render="onRender"
               style="margin-top: 80px"
           />
@@ -240,5 +295,47 @@ html {
   line-height: 1;
   color: var(--fg);
   background-color: var(--bg);
+}
+
+/* 登録ステータス表示 */
+.registration-status {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  text-align: center;
+  font-weight: bold;
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+}
+
+.registration-status.loading {
+  background: var(--primaryBg);
+  color: var(--primary);
+  border-bottom: 2px solid var(--primary);
+}
+
+.registration-status.success {
+  background: #d4edda;
+  color: #155724;
+  border-bottom: 2px solid #28a745;
+}
+
+.registration-status.error {
+  background: var(--dangerBg);
+  color: var(--danger);
+  border-bottom: 2px solid var(--danger);
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>

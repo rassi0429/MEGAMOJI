@@ -58,6 +58,7 @@ export default defineComponent({
   props: {
     show: {type: Boolean, required: true},
     emojiSize: {type: Number, default: null},
+    existingEmojis: {type: Array as () => string[], default: () => []},
   },
   emits: [
     "render",
@@ -98,6 +99,10 @@ export default defineComponent({
         color: absColor(cs.color, this.conf.color),
         pos: cs.pos,
       }));
+    },
+    isEmojiNameDuplicate(): boolean {
+      if (!this.conf.emojiName) return false;
+      return this.existingEmojis.includes(this.conf.emojiName);
     },
   },
   watch: {
@@ -218,9 +223,13 @@ export default defineComponent({
                   block
                   autofocus
                   :rows="1"
+                  :class="{ 'input-error': isEmojiNameDuplicate }"
                   @input="validateEmojiName($event.target.value)"
                   @keydown="preventNonAlphanumeric"
                   @compositionend="handleCompositionEnd"/>
+              <div v-if="isEmojiNameDuplicate" class="duplicate-warning">
+                この絵文字名は既に使用されています
+              </div>
           </Fieldset>
           <Fieldset label="テキスト (改行可)">
             <Space vertical full>
@@ -324,5 +333,26 @@ export default defineComponent({
 .font-select option {
   padding: 0.6em;
   background-color: #222;
+}
+
+.duplicate-warning {
+  color: var(--danger);
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 8px;
+  background: var(--dangerBg);
+  border-radius: 4px;
+  animation: shake 0.3s ease-in-out;
+}
+
+.input-error {
+  border-color: var(--danger) !important;
+  box-shadow: var(--dangerShadow) !important;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 </style>
