@@ -270,6 +270,8 @@ html, body {
   padding: 0;
   height: 100%;
   overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--bg-secondary);
 }
 
 html {
@@ -298,7 +300,7 @@ html {
   z-index: 100;
   background: var(--bg-secondary);
   border-radius: 0 0 var(--borderRadius) var(--borderRadius);
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: 0.16rem;
   border-bottom: 1px solid var(--border);
 }
 
