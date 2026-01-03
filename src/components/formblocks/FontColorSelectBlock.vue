@@ -44,6 +44,11 @@ export default defineComponent({
           <ColorSample :color="color"/>
         </ToggleButton>
       </Space>
+      <Color
+          block
+          name="文字色（カスタム）"
+          :model-value="modelValue"
+          @update:model-value="$emit('update:modelValue', $event)"/>
     </Space>
     <Color
         v-else
