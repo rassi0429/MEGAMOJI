@@ -285,15 +285,21 @@ html {
   flex-direction: column;
   min-height: 100vh;
   padding: var(--spacing-sm);
+  padding-top: calc(80px + var(--spacing-sm) * 2);
   gap: var(--spacing-sm);
 }
 
 /* プレビューエリア */
 .preview-area {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   background: var(--bg-secondary);
-  border-radius: var(--borderRadius);
-  padding: var(--spacing-md);
-  border: 1px solid var(--border);
+  border-radius: 0 0 var(--borderRadius) var(--borderRadius);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-bottom: 1px solid var(--border);
 }
 
 /* 入力エリア */
