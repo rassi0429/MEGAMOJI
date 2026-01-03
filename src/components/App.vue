@@ -200,15 +200,24 @@ export default defineComponent({
   --primaryDarker:  #6d9200;
   --primaryBg:      #86b30020;
   --primaryShadow:  0 0 0 2px #86b30030;
+  --primaryHover:   #9ed119;
+  --primaryActive:  #6d9200;
 
   --danger:         #ff6b6b;
   --dangerLighter:  #ff8585;
   --dangerDarker:   #e55555;
   --dangerBg:       #ff6b6b20;
   --dangerShadow:   0 0 0 2px #ff6b6b30;
+  --dangerHover:    #ff8585;
+  --dangerActive:   #e55555;
 
   --success:        #51cf66;
   --successBg:      #51cf6620;
+
+  /* text colors */
+  --light:          #ffffff;
+  --dark:           #1a1a1a;
+  --distantFg:      #ffffff;
 
   --elevatedBg:      #2d2d2d;
   --elevationShadow: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -218,6 +227,9 @@ export default defineComponent({
   --fontSizeMedium: 13px;
   --fontSizeLarge: 14px;
   --fontSizeXLarge: 16px;
+  --fontSizeSmallIcon: 16px;
+  --fontSizeIcon: 24px;
+  --fontSizePart: 32px;
 
   /* layout */
   --spacing-xs: 4px;
@@ -225,8 +237,28 @@ export default defineComponent({
   --spacing-md: 12px;
   --spacing-lg: 16px;
   --spacing-xl: 24px;
+  --spacingInlineSmall: 4px;
+  --spacingMedium: 8px;
+  --spacingLarge: 16px;
   --borderRadius: 8px;
   --borderRadiusSmall: 6px;
+  --borderRadiusMicro: 3px;
+  --paddingMinimal: 4px;
+  --padding: 8px;
+
+  /* slider */
+  --sliderKnobSize: 16px;
+  --sliderRailHeight: 6px;
+  --sliderMarkHeight: 8px;
+  --sliderValueWidth: 40px;
+  --sliderValueMargin: 4px;
+
+  /* shadows */
+  --pressableShadowDefault: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --pressableShadowPrimary: 0 1px 2px rgba(134, 179, 0, 0.3);
+  --pressableShadowPrimaryHover: 0 2px 4px rgba(134, 179, 0, 0.4);
+  --pressableShadowDanger: 0 1px 2px rgba(255, 107, 107, 0.3);
+  --pressableShadowDangerHover: 0 2px 4px rgba(255, 107, 107, 0.4);
 }
 
 * {
